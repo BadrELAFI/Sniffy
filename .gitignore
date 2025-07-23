@@ -1,0 +1,24 @@
+# Virtual Environment files (what you ignore)
+bin/
+include/
+lib/
+lib64/
+pyvenv.cfg
+share/
+
+# Python cache and compiled files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS generated files
+.DS_Store
+Thumbs.db

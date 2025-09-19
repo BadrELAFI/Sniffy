@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sniffy - Network Packet Sniffer</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-left">
+                <div class="logo">
+                    <div class="logo-icon">🔍</div>
+                    <span class="logo-text">Sniffy</span>
+                </div>
+            </div>
+            <div class="header-center">
+                <div class="connection-status" id="connectionStatus">
+                    <div class="status-indicator" id="statusIndicator"></div>
+                    <span id="statusText">Disconnected</span>
+                </div>
+            </div>
+            <div class="header-right">
+                <button class="btn btn-primary" id="connectBtn">Connect</button>
+                <button class="btn btn-secondary" id="clearBtn">Clear</button>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <div class="stats-container">
+                    <h3>Live Statistics</h3>
+                    <div class="stat-item">
+                        <span class="stat-label">Total Packets</span>
+                        <span class="stat-value" id="totalPackets">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">HTTP Requests</span>
+                        <span class="stat-value" id="httpCount">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">DNS Queries</span>
+                        <span class="stat-value" id="dnsCount">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">TCP Packets</span>
+                        <span class="stat-value" id="tcpCount">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">UDP Packets</span>
+                        <span class="stat-value" id="udpCount">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">ICMP Packets</span>
+                        <span class="stat-value" id="icmpCount">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">ICMPv6 Packets</span>
+                        <span class="stat-value" id="icmpv6Count">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">ARP Packets</span>
+                        <span class="stat-value" id="arpCount">0</span>
+                    </div>
+                </div>
+
+                <div class="filters-container">
+                    <h3>Filters</h3>
+                    <div class="filter-group">
+                        <label class="checkbox-container">
+                            <input type="checkbox" id="filterHTTP" checked>
+                            <span class="checkmark"></span>
+                            HTTP Traffic
+                        </label>
+                        <label class="checkbox-container">
+                            <input type="checkbox" id="filterDNS" checked>
+                            <span class="checkmark"></span>
+                            DNS Queries
+                        </label>
+                        <label class="checkbox-container">
+                            <input type="checkbox" id="filterTCP" checked>
+                            <span class="checkmark"></span>
+                            TCP Packets
+                        </label>
+                        <label class="checkbox-container">
+                            <input type="checkbox" id="filterUDP" checked>
+                            <span class="checkmark"></span>
+                            UDP Packets
+                        </label>
+                        <label class="checkbox-container">
+                            <input type="checkbox" id="filterICMP" checked>
+                            <span class="checkmark"></span>
+                            ICMP Packets
+                        </label>
+                        <label class="checkbox-container">
+                            <input type="checkbox" id="filterICMPv6" checked>
+                            <span class="checkmark"></span>
+                            ICMPv6 Packets
+                        </label>
+                      <label class="checkbox-container">
+                            <input type="checkbox" id="filterARP" checked>
+                            <span class="checkmark"></span>
+                            ARP Packets
+                        </label>
+
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Packet List -->
+            <div class="packet-container">
+                <div class="packet-header">
+                    <h2>Network Packets</h2>
+                    <div class="packet-controls">
+                        <input type="text" id="searchInput" placeholder="Search packets..." class="search-input">
+                        <button class="btn btn-icon" id="pauseBtn" title="Pause capture">
+                            <span id="pauseIcon">⏸️</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="packet-list" id="packetList">
+                    <div class="no-packets">
+                        <div class="no-packets-icon">📡</div>
+                        <h3>No packets captured yet</h3>
+                        <p>Connect to start capturing network traffic</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Packet Detail Modal -->
+        <div class="modal" id="packetModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Packet Details</h3>
+                    <button class="modal-close" id="modalClose">&times;</button>
+                </div>
+                <div class="modal-body" id="modalBody">
+                    <!-- Packet details will be inserted here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading Animation -->
+        <div class="loading-overlay" id="loadingOverlay">
+            <div class="loading-spinner">
+                <div class="spinner"></div>
+                <p>Connecting to packet sniffer...</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="renderer.js"></script>
+</body>
+</html>

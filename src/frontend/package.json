@@ -4,12 +4,47 @@
   "description": "",
   "main": "main.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "start-root": "sudo electron . --no-sandbox",
+    "dev": "electron . --dev",
+    "build": "electron-builder",
+    "dist": "electron-builder --publish=never"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": [
+    "electron",
+    "network",
+    "packet",
+    "sniffer",
+    "realtime"
+  ],
+  "author": "badr",
+  "license": "MIT",
   "dependencies": {
-    "electron": "^37.2.3"
+    "sudo-prompt": "^9.2.1",
+    "ws": "^8.18.3"
+  },
+  "devDependencies": {
+    "electron": "^37.2.3",
+    "electron-builder": "^26.0.12"
+  },
+  "build": {
+    "appId": "com.badr.sniffy",
+    "productName": "Sniffy",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "**/*",
+      "!**/*.py"
+    ],
+    "mac": {
+      "category": "public.app-category.developer-tools"
+    },
+    "win": {
+      "target": "nsis"
+    },
+    "linux": {
+      "target": "AppImage"
+    }
   }
 }

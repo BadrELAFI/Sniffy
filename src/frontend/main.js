@@ -29,7 +29,7 @@ function createWindow() {
     mainWindow.show();
     
     // DevTools 
-      mainWindow.webContents.openDevTools();
+      //mainWindow.webContents.openDevTools();
   });
 
   mainWindow.on('closed', () => {

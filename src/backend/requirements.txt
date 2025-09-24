@@ -1,4 +1,1 @@
-#flask
-#flask-socketio
-#eventlet
-#scapy
+websockets==15.0.1

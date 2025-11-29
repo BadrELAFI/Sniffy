@@ -4,6 +4,7 @@ A lightweight packet sniffer on LINUX that enables you to monitor incoming traff
 
 [!Important]
 This is a Linux based project, A windows version could be included in the future
+**Docker Engine is required** to run the backend.
 
 ## Key Features
 
@@ -13,31 +14,31 @@ This is a Linux based project, A windows version could be included in the future
 - Provides additional detailed information about each packet
 - Easy to extend: add your own protocol modules
 - CLI interface for quick inspection
+- **Dockerized Backend:** Isolated and clean environment for packet capture.
 
 ## Dependencies
-- python3
-- pip
-- npm
-- electron js
+- Node.js & npm
+- Docker engine & Docker compose
 
 ## Installation
 
 1. Clone the repo to your local machine
 ```bash
-git clone https://github.com/bidro-ops/Sniffy.git
+git clone https://github.com/BadrELAFI/Sniffy.git
 cd Sniffy
 ```
-2. install dependencies 
+2. Configure docker Permissions
+```bash
+sudo usermod -aG docker $USER
+```
+[!CAUTION] You must log out and log back in (or restart your computer) for this change to take effect. If you skip this, the app will fail to start the backend.
+
+3. install dependencies
 
 ```bash
 cd src/frontend
 npm install
 ```
-```bash
-cd src/backend
-pip install -r requirements.txt 
-```
-
 3. Run program
 
 ```bash

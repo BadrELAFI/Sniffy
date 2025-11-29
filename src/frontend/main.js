@@ -105,7 +105,7 @@ ipcMain.handle('get-app-version', () => {
   return app.getVersion();
 });
 
-
+/*
 ipcMain.handle('start-sniffer', async () => {
   return new Promise((resolve, reject) => {
 
@@ -124,5 +124,32 @@ ipcMain.handle('start-sniffer', async () => {
     });
     pythonProcess.on('error', reject);
     pythonProcess.on('spawn', () => resolve('started'));
+  });
+});
+*/
+
+const options = {
+  name: 'Sniffy Packet Sniffer',};
+
+ipcMain.handle('start-sniffer', async () => {
+  return new Promise((resolve, reject) => {
+    
+    const composeFile = path.join(__dirname, '..', '..', 'docker-compose.yml');
+    
+    const command = `docker compose -f "${composeFile}" up -d --build`;
+
+    console.log("Requesting sudo access to start Docker...");
+
+    // This triggers the Native OS Password Dialog
+    sudo.exec(command, options, (error, stdout, stderr) => {
+      if (error) {
+        console.error('Sudo Error:', error);
+        reject(error);
+        return;
+      }
+      
+      console.log('Docker Output:', stdout);
+      resolve('started');
+    });
   });
 });

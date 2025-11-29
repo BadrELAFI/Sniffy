@@ -128,7 +128,7 @@ async def packet_sniffer(websocket):
             print(f"Error processing packet: {e}")
             continue
 
-async def handler(websocket, path):
+async def handler(websocket):
     print(f"Client connected: {websocket.remote_address}")
     try:
         await packet_sniffer(websocket)

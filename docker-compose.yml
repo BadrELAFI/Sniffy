@@ -1,0 +1,16 @@
+services:
+  sniffer-backend:
+    build: ./src/backend
+    container_name: raw-socket-sniffer
+    
+    
+    network_mode: "host"
+
+    cap_add:
+      - NET_RAW
+      - NET_ADMIN
+      
+    privileged: true
+
+    #volumes:
+    #  - ./backend:/app

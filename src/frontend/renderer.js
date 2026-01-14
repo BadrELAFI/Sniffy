@@ -135,51 +135,95 @@ class SniffyApp {
 
 
     async connect() {
-    this.showLoading(true);
+        this.showLoading(true);
 
-      try {
-          await ipcRenderer.invoke('start-sniffer');
-          console.log('Sniffer backend started');
+        try {
+            await ipcRenderer.invoke('start-sniffer');
+            console.log('Sniffer backend started, waiting for WebSocket to be available...');
 
-          this.socket = new WebSocket('ws://localhost:8765');
+            // Try to connect with retries
+            await this.connectWithRetry(5, 1000); // 5 retries, 1 second apart
 
-          this.socket.onopen = () => {
-              this.isConnected = true;
-              this.updateConnectionStatus();
-              this.showLoading(false);
-              this.showNotification('Connected to packet sniffer', 'success');
-          };
+        } catch (error) {
+            console.error('Could not start sniffer backend or connect:', error);
+            this.showLoading(false);
+            this.showNotification('Connection failed: ' + error.message, 'error');
+        }
+    }
 
-          this.socket.onmessage = (event) => {
-              if (!this.isPaused) {
-                  try {
-                      const packet = JSON.parse(event.data);
-                      this.handlePacket(packet);
-                  } catch (error) {
-                      console.error('Error parsing packet:', error);
-                  }
-              }
-          };
+    async connectWithRetry(maxRetries = 5, delayMs = 1000) {
+        let lastError;
+        
+        for (let i = 0; i < maxRetries; i++) {
+            try {
+                console.log(`WebSocket connection attempt ${i + 1}/${maxRetries}...`);
+                await this.attemptWebSocketConnection();
+                return; // Success!
+            } catch (error) {
+                lastError = error;
+                console.log(`Attempt ${i + 1} failed:`, error.message);
+                if (i < maxRetries - 1) {
+                    await new Promise(resolve => setTimeout(resolve, delayMs));
+                }
+            }
+        }
+        
+        throw new Error('Failed to connect after ' + maxRetries + ' attempts: ' + lastError.message);
+    }
 
-          this.socket.onclose = () => {
-              this.isConnected = false;
-              this.updateConnectionStatus();
-              this.showNotification('Disconnected from packet sniffer', 'warning');
-          };
+    async attemptWebSocketConnection() {
+        return new Promise((resolve, reject) => {
+            const socket = new WebSocket('ws://localhost:8765');
+            const timeout = setTimeout(() => {
+                socket.close();
+                reject(new Error('WebSocket connection timeout'));
+            }, 5000);
 
-          this.socket.onerror = (error) => {
-              console.error('WebSocket error:', error);
-              this.isConnected = false;
-              this.updateConnectionStatus();
-              this.showLoading(false);
-              this.showNotification('Failed to connect to packet sniffer', 'error');
-          };
+            socket.onopen = () => {
+                clearTimeout(timeout);
+                this.socket = socket;
+                this.isConnected = true;
+                this.updateConnectionStatus();
+                this.showLoading(false);
+                this.showNotification('Connected to packet sniffer', 'success');
+                
+                // Setup message handler
+                this.socket.onmessage = (event) => {
+                    if (!this.isPaused) {
+                        try {
+                            const packet = JSON.parse(event.data);
+                            this.handlePacket(packet);
+                        } catch (error) {
+                            console.error('Error parsing packet:', error);
+                        }
+                    }
+                };
 
-      } catch (error) {
-          console.error('Could not start sniffer backend or connect:', error);
-          this.showLoading(false);
-          this.showNotification('Connection failed. server error.', 'error');
-      }
+                this.socket.onclose = () => {
+                    this.isConnected = false;
+                    this.updateConnectionStatus();
+                    this.showNotification('Disconnected from packet sniffer', 'warning');
+                };
+
+                this.socket.onerror = (error) => {
+                    console.error('WebSocket error:', error);
+                    this.isConnected = false;
+                    this.updateConnectionStatus();
+                };
+                
+                resolve();
+            };
+
+            socket.onerror = () => {
+                clearTimeout(timeout);
+                reject(new Error('WebSocket connection refused'));
+            };
+
+            socket.onclose = () => {
+                clearTimeout(timeout);
+                reject(new Error('WebSocket connection closed'));
+            };
+        });
     } 
 
     disconnect() {
@@ -189,6 +233,11 @@ class SniffyApp {
         }
         this.isConnected = false;
         this.updateConnectionStatus();
+        
+        // Stop the backend
+        ipcRenderer.invoke('stop-sniffer').catch(error => {
+            console.error('Error stopping sniffer:', error);
+        });
     }
 
     updateConnectionStatus() {

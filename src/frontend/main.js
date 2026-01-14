@@ -153,3 +153,25 @@ ipcMain.handle('start-sniffer', async () => {
     });
   });
 });
+
+ipcMain.handle('stop-sniffer', async () => {
+  return new Promise((resolve, reject) => {
+    
+    const composeFile = path.join(__dirname, '..', '..', 'docker-compose.yml');
+    
+    const command = `docker compose -f "${composeFile}" down`;
+
+    console.log("Stopping Docker containers...");
+
+    sudo.exec(command, options, (error, stdout, stderr) => {
+      if (error) {
+        console.error('Sudo Error:', error);
+        reject(error);
+        return;
+      }
+      
+      console.log('Docker stopped:', stdout);
+      resolve('stopped');
+    });
+  });
+});
